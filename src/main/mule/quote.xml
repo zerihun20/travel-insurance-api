@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="get-quote-sub-flow" doc:id="9ea6fdef-f6bb-4690-9711-e7e0885c44b5" >
+		<logger level="INFO" doc:name="request recevied" doc:id="d4fc20b7-5227-496a-892b-0c03d1840efd" message="request recevied to get quotes"/>
+		<ee:transform doc:name="set variables" doc:id="0813d840-0758-4016-80f9-48e751ef4f46" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="destination" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.destination]]></ee:set-variable>
+				<ee:set-variable variableName="age" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.age]]></ee:set-variable>
+				<ee:set-variable variableName="tripStartDate" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.tripStartDate]]></ee:set-variable>
+				<ee:set-variable variableName="tripEndDate" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.tripEndDate]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="read insurance plans" doc:id="cb8d8b28-4120-42b7-9837-c7e2bc419d12" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+readUrl("classpath://Travel_Insurance_Plans.json", "application/json")]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="response" doc:id="e1ebd1c5-cb0c-4f1f-800d-6ab08bd3988e" >
+			<ee:message >
+				<ee:set-payload resource="response.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="request completed" doc:id="722d9dbc-7e1f-4679-8ea8-47e6a051d19c" message="request completed sucessfully to get quotes"/>
+	</sub-flow>
+</mule>

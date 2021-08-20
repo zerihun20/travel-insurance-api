@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<configuration doc:name="Configuration" doc:id="041f9856-f278-48f5-8ca5-7e7af11c9839" defaultErrorHandler-ref="globalError_Handler" />
+	<api-gateway:autodiscovery apiId="${id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="46397054-7a02-4b84-ace0-75a0a15feace" flowRef="travel-insurance-api-main" />
+	<configuration-properties doc:name="Configuration properties" doc:id="15e053f1-bdf6-4825-b4b2-cbf8eb499a1b" file="config\dev.properties" />
+	<error-handler name="globalError_Handler" doc:id="088982e8-509c-4a49-b4e3-ea3e1e9efe1a" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="af0b9f6e-a5a8-4daf-a7b3-bd1b89304a7b" >
+			<logger level="INFO" doc:name="Logger" doc:id="c31bb422-dd6b-4f57-92af-d87ece7500f6" message="error occurred"/>
+		</on-error-propagate>
+	</error-handler>
+	<sub-flow name="set-error-response-sub-flow" doc:id="5be9b667-48c9-49c7-8086-9474a2cb7b67" >
+		<ee:transform doc:name="error response" doc:id="e238712f-f754-49d1-9120-fe45951b64b3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	error: {
+		"message": error.description,
+		"type": error.errorType.identifier 
+	}
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+</mule>
